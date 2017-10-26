@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  RepositoryName:
+    Description: The name of the Repository
+    Type: String
+Resources:
+  DockerImageRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref RepositoryName
+      RepositoryPolicyText:
+        Version: '2008-10-17'
+        Statement:
+        - Sid: AllowPush
+          Effect: Allow
+          Principal:
+            AWS:
+            - !Sub arn:aws:iam::${AWS::AccountId}:root
+            - arn:aws:iam::728137396354:role/jenkins-SlaveBuildTaskRole-A26S1VEGOYG1
+          Action:
+            - ecr:GetAuthorizationToken
+            - ecr:GetDownloadUrlForLayer
+            - ecr:PutImage
+            - ecr:InitiateLayerUpload
+            - ecr:UploadLayerPart
+            - ecr:CompleteLayerUpload
+            - ecr:BatchCheckLayerAvailability
+        - Sid: AllowPull
+          Effect: Allow
+          Principal:
+            AWS:
+            - arn:aws:iam::728137396354:root
+          Action:
+            - ecr:GetDownloadUrlForLayer
+            - ecr:BatchGetImage
+            - ecr:BatchCheckLayerAvailability
+            - ecr:GetAuthorizationToken
