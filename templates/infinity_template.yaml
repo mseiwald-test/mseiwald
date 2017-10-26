@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Example infinity service
+
+Parameters:
+  ServiceName:
+    Description: The name of the service
+    Type: String
+  ImageName:
+    Description: The name of the Docker image
+    Type: String
+  ImageTag:
+    Description: Tag of the Docker Image
+    Type: String
+
+Resources:
+  Service:
+    Type: 'Custom::InfinityService'
+    Properties:
+      ServiceName: !Ref ServiceName
+      ContainerPort: 80
+      Memory: 256
+      ImageName: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ImageName}:${ImageTag}
+      ServiceToken: 'arn:aws:lambda:eu-west-1:728137396354:function:angus'
+      Tags:
+      - service: my-service
+      - usecase: my-usecase
+      - segment: my-segment
+      - owner: my-team-email-distribution-list
+      - team: my-team
+
+Outputs:
+  URL:
+    Description: URL of the service
+    Value: !Join [ "", [ "https://", !GetAtt Service.DNSName ] ]
